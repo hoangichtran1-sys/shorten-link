@@ -1,0 +1,1 @@
+CREATE INDEX "long_url_idx" ON "urls" ("long_url");
