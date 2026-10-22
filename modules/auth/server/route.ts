@@ -140,10 +140,9 @@ export const authRouter = new Elysia({ prefix: "/auth", name: "auth-route" })
     )
     .post(
         "/logout",
-        async ({ set, cookie: { accessToken } }) => {
+        async ({ cookie: { accessToken } }) => {
             accessToken.remove();
 
-            set.status = 204;
             return null;
         },
         {

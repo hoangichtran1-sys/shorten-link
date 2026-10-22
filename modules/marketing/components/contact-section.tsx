@@ -16,18 +16,13 @@ import {
     InputGroupText,
     InputGroupTextarea,
 } from "@/components/ui/input-group";
-
-const contactFormSchema = z.object({
-    firstName: z.string().min(1).max(30),
-    lastName: z.string().min(1).max(30),
-    email: z.email(),
-    subject: z.string().min(1).max(50),
-    message: z.string().min(3).max(1000),
-});
+import { contactFormSchema } from "../schemas";
+import { useSendContact } from "../api/use-send-contact";
 
 type ContactFormValues = z.infer<typeof contactFormSchema>;
 
 export const ContactSection = ({ className }: { className?: string }) => {
+    const { mutate, isPending } = useSendContact();
     const form = useForm<ContactFormValues>({
         resolver: zodResolver(contactFormSchema),
         defaultValues: {
@@ -40,7 +35,7 @@ export const ContactSection = ({ className }: { className?: string }) => {
     });
 
     const onSubmit = (values: ContactFormValues) => {
-        console.log(values);
+        mutate(values, { onSuccess: () => form.reset() });
     };
 
     const message = useWatch({
@@ -195,7 +190,11 @@ export const ContactSection = ({ className }: { className?: string }) => {
                                     />
                                 </FieldGroup>
 
-                                <Button className="h-9 px-4 py-2 w-full cursor-pointer">
+                                <Button
+                                    type="submit"
+                                    disabled={isPending}
+                                    className="h-9 px-4 py-2 w-full cursor-pointer"
+                                >
                                     <MailIcon className="size-4 text-white" />
                                     Send Message
                                 </Button>

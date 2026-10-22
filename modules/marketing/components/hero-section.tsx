@@ -1,49 +1,33 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { AvatarGroup } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarGroup, AvatarGroupCount } from "@/components/ui/avatar";
 import { Star } from "lucide-react";
 import Image from "next/image";
 import { ModeToggle } from "@/components/mode-toggle";
 import { useRouter } from "next/navigation";
-
-interface ReviewerData {
-    id: number;
-    avatarUrl: string;
-    fallback: string;
-}
-
-const reviewers: ReviewerData[] = [
-    {
-        id: 1,
-        avatarUrl: "https://notion-avatars.netlify.app/api/avatar?preset=male-1",
-        fallback: "U1",
-    },
-    {
-        id: 2,
-        avatarUrl: "https://notion-avatars.netlify.app/api/avatar?preset=female-1",
-        fallback: "U2",
-    },
-    {
-        id: 3,
-        avatarUrl: "https://notion-avatars.netlify.app/api/avatar?preset=male-2",
-        fallback: "U3",
-    },
-    {
-        id: 4,
-        avatarUrl: "https://notion-avatars.netlify.app/api/avatar?preset=female-2",
-        fallback: "U4",
-    },
-    {
-        id: 5,
-        avatarUrl: "https://notion-avatars.netlify.app/api/avatar?preset=male-3",
-        fallback: "U5",
-    },
-];
+import { useGetUsers } from "../api/use-get-users";
+import { useGetReviews } from "@/modules/review/api/use-get-reviews";
+import { useMemo } from "react";
+import { generateColor } from "@/lib/utils";
 
 export const HeroSection = () => {
     const router = useRouter();
+
+    const { data: users } = useGetUsers();
+
+    const { data: reviews } = useGetReviews();
+
+    const [reviewers, remainingCount] = useMemo(() => {
+        if (!users) return [[], 0];
+        if (users.length > 3) {
+            const membersDisplay = users.slice(0, 3);
+            const membersRemainingCount = users.slice(3).length;
+            return [membersDisplay, membersRemainingCount];
+        }
+
+        return [users, 0];
+    }, [users]);
 
     return (
         <section className="w-full py-12 lg:py-20">
@@ -73,21 +57,22 @@ export const HeroSection = () => {
                             <AvatarGroup>
                                 {reviewers.map((reviewer) => (
                                     <Avatar
-                                        key={reviewer.id}
+                                        key={reviewer.email}
                                         className="ring-background bg-muted size-10 ring-2"
                                     >
-                                        <AvatarImage
-                                            src={reviewer.avatarUrl}
-                                            alt={`User ${reviewer.id}`}
-                                        />
-                                        <AvatarFallback className="text-xs">
-                                            {reviewer.fallback}
+                                        <AvatarFallback
+                                            style={{
+                                                backgroundColor: generateColor(reviewer.name),
+                                            }}
+                                            className="text-md text-white font-semibold"
+                                        >
+                                            {reviewer.name.substring(0, 2)}
                                         </AvatarFallback>
                                     </Avatar>
                                 ))}
-                                <div className="border-background bg-accent relative -ms-1.5 flex size-10 items-center justify-center rounded-full border-2">
-                                    <span className="text-xs font-medium">+5</span>
-                                </div>
+                                {remainingCount > 0 && (
+                                    <AvatarGroupCount>+{remainingCount}</AvatarGroupCount>
+                                )}
                             </AvatarGroup>
 
                             <div className="flex flex-col gap-0.5">
@@ -95,7 +80,9 @@ export const HeroSection = () => {
                                     {Array.from({ length: 5 }).map((_, i) => (
                                         <Star key={i} className="fill-foreground size-4" />
                                     ))}
-                                    <span className="ms-2 text-sm font-medium">(15)</span>
+                                    <span className="ms-2 text-sm font-medium">
+                                        ({reviews?.length || 0})
+                                    </span>
                                 </div>
                                 <p className="text-muted-foreground text-sm">
                                     Trusted by 1000+ developers
@@ -106,8 +93,8 @@ export const HeroSection = () => {
 
                     <div className="aspect-4/3 overflow-hidden rounded-xl border">
                         <Image
-                            src="https://ui.shadcn.com/placeholder.svg"
-                            alt="ShadcnStore Showcase"
+                            src="/hero.png"
+                            alt="Hero Image"
                             className="size-full object-cover dark:brightness-[0.95] dark:invert"
                             width={800}
                             height={600}

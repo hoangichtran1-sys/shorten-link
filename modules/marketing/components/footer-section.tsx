@@ -7,6 +7,7 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/in
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup } from "@/components/ui/field";
 import { ArrowRight, MailIcon } from "lucide-react";
+import { useSubscriber } from "../api/use-subscriber";
 
 export const linkColumns = [
     { title: "Home", links: ["About Us", "Collection", "Blog & News"] },
@@ -21,6 +22,7 @@ const subscribeFormSchema = z.object({
 type SubscribeFormValues = z.infer<typeof subscribeFormSchema>;
 
 export const FooterSection = () => {
+    const { mutate, isPending } = useSubscriber();
     const form = useForm<SubscribeFormValues>({
         resolver: zodResolver(subscribeFormSchema),
         defaultValues: {
@@ -29,7 +31,7 @@ export const FooterSection = () => {
     });
 
     const onSubmit = (values: SubscribeFormValues) => {
-        console.log(values);
+        mutate(values, { onSuccess: () => form.reset() });
     };
 
     return (
@@ -84,11 +86,11 @@ export const FooterSection = () => {
                                     control={form.control}
                                     render={({ field, fieldState }) => (
                                         <Field data-invalid={fieldState.invalid}>
-                                            <InputGroup className='border-muted-foreground/20 bg-background/80 h-12 pe-32'>
+                                            <InputGroup className="border-muted-foreground/20 bg-background/80 h-12 pe-32">
                                                 <InputGroupInput
                                                     {...field}
                                                     type="email"
-                                                    placeholder="Enter your email"                 
+                                                    placeholder="Enter your email"
                                                     aria-invalid={fieldState.invalid}
                                                     autoComplete="off"
                                                 />
@@ -108,6 +110,7 @@ export const FooterSection = () => {
                                 variant="default"
                                 className="absolute inset-e-1 top-1 h-10 cursor-pointer px-4"
                                 aria-label="Subscribe to newsletter"
+                                disabled={isPending}
                             >
                                 Subscribe
                                 <ArrowRight />

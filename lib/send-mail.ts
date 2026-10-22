@@ -22,7 +22,8 @@ export async function sendEmail({ fromEmail, fromName, toEmail, toName, subject,
             subject,
             htmlContent: html,
         })
-        .catch(() => {
+        .catch((error) => {
+             console.log(error)
             throw ApiError.badRequest("Failed to send email");
         });
 }

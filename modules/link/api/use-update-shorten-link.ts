@@ -9,7 +9,7 @@ import { updateFormSchema } from "../schemas";
 type ResponseType = Treaty.Data<ReturnType<typeof eden.link>["put"]>;
 type RequestType = {
     id: number;
-    body: z.infer<typeof updateFormSchema>;
+    body: Partial<z.infer<typeof updateFormSchema>>;
 };
 
 export const useUpdateShortenLink = () => {

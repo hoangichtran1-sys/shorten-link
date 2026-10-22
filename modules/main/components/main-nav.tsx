@@ -19,6 +19,11 @@ export const MainNav = ({ className }: MainNavProps) => {
 
     const routes = [
         {
+            href: "/",
+            label: "Home",
+            active: pathname === "/",
+        },
+        {
             href: "/short-link",
             label: "Short Link",
             active: pathname === "/short-link",

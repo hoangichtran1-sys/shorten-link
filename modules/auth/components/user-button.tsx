@@ -17,6 +17,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGetCurrent } from "../api/use-current";
 import { useLogout } from "../api/use-logout";
+import { generateColor } from "@/lib/utils";
 
 export const UserButton = () => {
     const { setTheme } = useTheme();
@@ -39,8 +40,11 @@ export const UserButton = () => {
                     <HoverCard openDelay={100} closeDelay={100}>
                         <HoverCardTrigger>
                             <Avatar>
-                                <AvatarFallback className="text-white bg-primary text-lg font-semibold">
-                                    {currentUser.name.charAt(0).toUpperCase()}
+                                <AvatarFallback
+                                    style={{ backgroundColor: generateColor(currentUser.name) }}
+                                    className="text-white font-semibold"
+                                >
+                                    {currentUser.name.substring(0, 2).toUpperCase()}
                                 </AvatarFallback>
                             </Avatar>
                         </HoverCardTrigger>

@@ -6,8 +6,10 @@ import { globalRateLimit } from "@/lib/rate-limiter";
 
 import { authRouter } from "@/modules/auth/server/route";
 import { linkRouter } from "@/modules/link/server/route";
+import { reviewRouter } from "@/modules/review/server/router";
 import { cronsRouter } from "./cron";
 import { handleRedirect } from "./redirect";
+import { otherRouter } from "./other";
 
 export const app = new Elysia();
 
@@ -42,7 +44,9 @@ export const router = app.group("/api", (app) =>
     app
         .use(authRouter)
         .use(linkRouter)
+        .use(reviewRouter)
         .use(cronsRouter)
+        .use(otherRouter)
         .get("/health", ({ set }) => {
             set.status = 200;
             return {
